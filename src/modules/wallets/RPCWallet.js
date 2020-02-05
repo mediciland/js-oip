@@ -102,10 +102,17 @@ class RPCWallet {
     if (!this.options.wif) { throw new Error('`wif` (a Private Key) is a required option in order to use RPC Wallet!') }
     if (!this.options.publicAddress) { throw new Error('`publicAddress` (the Public Address for the `wif`) is a required option in order to use RPC Wallet!') }
 
-    // If the port is not set, default to Livenet (7313), otherwise if they passed the string "testnet" use the testnet port (17313)
+    // If the port is not set, default to Livenet (7313),
+    //   if they passed the string "testnet" use the testnet port (17313)
+    //   if they passed the string "regtest" use the regtest port (17413)
     if (!this.options.rpc.port) {
-      if (this.options.network && (this.options.network === 'testnet' || this.options.network === 'regtest')) { this.options.rpc.port = 17313 } 
-      else { this.options.rpc.port = 7313 }
+      if (this.options.network && this.options.network === 'testnet') {
+        this.options.rpc.port = 17313
+      } else if (this.options.network && this.options.network === 'regtest') {
+        this.options.rpc.port = 17413
+      } else {
+        this.options.rpc.port = 7313
+      }
     }
     // If host is not set, use localhost
     if (!this.options.rpc.host) { this.options.rpc.host = 'localhost' }
