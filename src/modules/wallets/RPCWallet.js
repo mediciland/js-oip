@@ -655,12 +655,9 @@ class RPCWallet {
 
     // Request the list of unspent transactions
     const MIN_CONFIRMATIONS = 0
+    const MAX_CONFIRMATIONS = 9999999
 
-    const MAX_CONFIRMATIONS_MAINNET = 9999999 // mainnet/testnet we want to search back as far as we can to find unspent utxos
-    const MAX_CONFIRMATIONS_REGTEST = 150 // only request 150 on regtest since we are getting utxo's each block and searching millions of blocks crashes the request
-    const MAX_CONFIRMATIONS = (this.options.network && this.options.network === 'regtest') ? MAX_CONFIRMATIONS_REGTEST : MAX_CONFIRMATIONS_MAINNET
-
-    let utxoRes = await this.rpcRequest('listunspent', [ MIN_CONFIRMATIONS, MAX_CONFIRMATIONS, [this.publicAddress] ])
+    let utxoRes = await this.rpcRequest('listunspent', [ MIN_CONFIRMATIONS, MAX_CONFIRMATIONS, [this.publicAddress], true, { "minimumAmount": MIN_UTXO_AMOUNT, "maximumCount": 1 }])
     // Throw if there was an error
     if (utxoRes.error && utxoRes.error !== null) { throw new Error('Unable to get unspent transactions for: ' + this.publicAddress + '\n' + JSON.stringify(utxoRes.error)) }
 
@@ -675,7 +672,10 @@ class RPCWallet {
     })
 
     // Check if we have no transaction outputs available to spend from, and throw an error if so
-    if (filtered.length === 0) { throw new Error('No previous unspent output available! Please send some FLO to ' + this.publicAddress + ' and then try again!') }
+    if (filtered.length === 0) { 
+      console.log(utxoRes)
+      throw new Error('No previous unspent output available! Please send some FLO to ' + this.publicAddress + ' and then try again!')
+    }
 
     // Sort by confirmations descending (highest conf first)
     filtered.sort((a, b) => {
