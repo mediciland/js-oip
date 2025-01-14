@@ -657,7 +657,7 @@ class RPCWallet {
     const MIN_CONFIRMATIONS = 0
 
     const MAX_CONFIRMATIONS_MAINNET = 9999999 // mainnet/testnet we want to search back as far as we can to find unspent utxos
-    const MAX_CONFIRMATIONS_REGTEST = 100 // only request 100 on regtest since we are getting utxo's each block and searching millions of blocks crashes the request
+    const MAX_CONFIRMATIONS_REGTEST = 150 // only request 150 on regtest since we are getting utxo's each block and searching millions of blocks crashes the request
     const MAX_CONFIRMATIONS = (this.options.network && this.options.network === 'regtest') ? MAX_CONFIRMATIONS_REGTEST : MAX_CONFIRMATIONS_MAINNET
 
     let utxoRes = await this.rpcRequest('listunspent', [ MIN_CONFIRMATIONS, MAX_CONFIRMATIONS, [this.publicAddress] ])
